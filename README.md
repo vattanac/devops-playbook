@@ -81,3 +81,4 @@ In `build_menu.py` you can:
 
 - Edit the `EXCLUDED` set to hide specific files or folders from the tree.
 - Set `INCLUDE_EXTENSIONS` to filter by file type (e.g. `{'.html', '.docx'}`).
+
