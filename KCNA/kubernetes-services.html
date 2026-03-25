@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kubernetes Services — Visual Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b0e1a;
+    --surface: #111526;
+    --surface2: #181d30;
+    --border: rgba(255,255,255,0.08);
+    --accent: #5b8dee;
+    --accent2: #3ecf8e;
+    --accent3: #f7b731;
+    --accent4: #e55f5f;
+    --text: #e8ecf5;
+    --muted: #7b83a0;
+    --mono: 'Space Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--sans);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(91,141,238,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(91,141,238,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 60px 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    margin-bottom: 60px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--accent);
+    border: 1px solid rgba(91,141,238,0.3);
+    padding: 4px 12px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+
+  h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .subtitle {
+    font-size: 16px;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 520px;
+  }
+
+  /* Section */
+  section {
+    margin-bottom: 48px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  section:nth-child(2) { animation-delay: 0.1s; }
+  section:nth-child(3) { animation-delay: 0.2s; }
+  section:nth-child(4) { animation-delay: 0.3s; }
+  section:nth-child(5) { animation-delay: 0.4s; }
+  section:nth-child(6) { animation-delay: 0.5s; }
+
+  .section-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  h2 {
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: 12px;
+    letter-spacing: -0.3px;
+  }
+
+  p {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.75;
+    margin-bottom: 12px;
+  }
+
+  p strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* Cards grid */
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-top: 24px;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+    cursor: default;
+  }
+
+  .card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255,255,255,0.15);
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .card.blue::before  { background: var(--accent); }
+  .card.green::before { background: var(--accent2); }
+  .card.yellow::before{ background: var(--accent3); }
+  .card.red::before   { background: var(--accent4); }
+
+  .card-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 16px;
+    font-size: 18px;
+  }
+
+  .card.blue  .card-icon { background: rgba(91,141,238,0.15); }
+  .card.green .card-icon { background: rgba(62,207,142,0.15); }
+  .card.yellow.card-icon { background: rgba(247,183,49,0.15); }
+  .card.yellow .card-icon { background: rgba(247,183,49,0.15); }
+  .card.red .card-icon   { background: rgba(229,95,95,0.15); }
+
+  .card h3 {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: -0.2px;
+  }
+
+  .card.blue  h3 { color: var(--accent); }
+  .card.green h3 { color: var(--accent2); }
+  .card.yellow h3{ color: var(--accent3); }
+  .card.red h3   { color: var(--accent4); }
+
+  .card p {
+    font-size: 13.5px;
+    color: var(--muted);
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .badge {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .badge.blue   { background: rgba(91,141,238,0.12); color: var(--accent); border: 1px solid rgba(91,141,238,0.2); }
+  .badge.green  { background: rgba(62,207,142,0.12); color: var(--accent2); border: 1px solid rgba(62,207,142,0.2); }
+  .badge.yellow { background: rgba(247,183,49,0.12); color: var(--accent3); border: 1px solid rgba(247,183,49,0.2); }
+
+  /* Diagram: Cluster */
+  .cluster-diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-top: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cluster-diagram::before {
+    content: 'CLUSTER';
+    position: absolute;
+    top: 14px; left: 20px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: rgba(255,255,255,0.15);
+    letter-spacing: 3px;
+  }
+
+  .diagram-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .diagram-row:last-child { margin-bottom: 0; }
+
+  .pod-box {
+    background: var(--surface2);
+    border: 1px solid rgba(91,141,238,0.25);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: border-color 0.2s;
+  }
+
+  .pod-box:hover { border-color: var(--accent); }
+
+  .pod-box .dot {
+    width: 7px;
+    height: 7px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  .pod-box.dying .dot  { background: var(--accent4); animation: none; }
+  .pod-box.dying       { border-color: rgba(229,95,95,0.25); }
+  .pod-box.dying       { color: var(--accent4); }
+
+  .svc-box {
+    background: rgba(62,207,142,0.06);
+    border: 1px solid rgba(62,207,142,0.3);
+    border-radius: 10px;
+    padding: 12px 24px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent2);
+    text-align: center;
+    min-width: 160px;
+  }
+
+  .svc-box span {
+    display: block;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 2px;
+    letter-spacing: 1px;
+  }
+
+  .arrow-v {
+    text-align: center;
+    font-size: 18px;
+    color: var(--muted);
+    line-height: 1;
+    margin: -6px 0;
+  }
+
+  .arrow-h {
+    color: var(--muted);
+    font-size: 16px;
+    line-height: 1;
+  }
+
+  .external-box {
+    background: rgba(247,183,49,0.06);
+    border: 1px dashed rgba(247,183,49,0.35);
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--accent3);
+    text-align: center;
+  }
+
+  /* Service types */
+  .type-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    margin-top: 24px;
+  }
+
+  .type-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    align-items: start;
+    gap: 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    transition: border-color 0.2s;
+  }
+
+  .type-row:hover { border-color: rgba(255,255,255,0.15); }
+
+  .type-name {
+    font-family: var(--mono);
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 6px;
+    text-align: center;
+    align-self: start;
+  }
+
+  .type-name.clusterip { background: rgba(91,141,238,0.12); color: var(--accent); border: 1px solid rgba(91,141,238,0.2); }
+  .type-name.nodeport  { background: rgba(62,207,142,0.12); color: var(--accent2); border: 1px solid rgba(62,207,142,0.2); }
+  .type-name.lb        { background: rgba(247,183,49,0.12); color: var(--accent3); border: 1px solid rgba(247,183,49,0.2); }
+
+  .type-desc h4 {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 6px;
+    color: var(--text);
+  }
+
+  .type-desc p {
+    font-size: 13.5px;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  .scope-tag {
+    display: inline-block;
+    font-size: 11px;
+    font-family: var(--mono);
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-top: 8px;
+  }
+
+  .scope-internal { background: rgba(229,95,95,0.1); color: var(--accent4); }
+  .scope-external { background: rgba(62,207,142,0.1); color: var(--accent2); }
+  .scope-cloud    { background: rgba(247,183,49,0.1); color: var(--accent3); }
+
+  /* Info box */
+  .info-box {
+    background: rgba(91,141,238,0.06);
+    border: 1px solid rgba(91,141,238,0.2);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 20px;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .info-box .icon { font-size: 16px; margin-top: 1px; flex-shrink: 0; }
+
+  .info-box p {
+    font-size: 13.5px;
+    margin: 0;
+    color: rgba(232,236,245,0.7);
+    line-height: 1.65;
+  }
+
+  /* Code snippet */
+  .code-block {
+    background: #0d1017;
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: var(--mono);
+    font-size: 12px;
+    line-height: 1.8;
+    overflow-x: auto;
+    margin-top: 16px;
+    color: #a9b7d0;
+  }
+
+  .code-block .kw  { color: #5b8dee; }
+  .code-block .str { color: #3ecf8e; }
+  .code-block .num { color: #f7b731; }
+  .code-block .cmt { color: #4a5568; }
+
+  /* Footer */
+  footer {
+    margin-top: 72px;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: gap;
+    gap: 12px;
+    animation: fadeUp 0.6s ease 0.6s both;
+  }
+
+  footer p {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin: 0;
+  }
+
+  /* Animations */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+  }
+
+  @media (max-width: 600px) {
+    .type-row { grid-template-columns: 1fr; }
+    .diagram-row { gap: 8px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="tag">Kubernetes</div>
+    <h1>Understanding <span>Services</span></h1>
+    <p class="subtitle">How pods discover each other, communicate inside a cluster, and expose applications to the outside world.</p>
+  </header>
+
+  <!-- 1: Pods -->
+  <section>
+    <div class="section-label">01 — Foundation</div>
+    <h2>Pods: the smallest deployable units</h2>
+    <p>Everything you run on Kubernetes lives inside a <strong>pod</strong>. Pods are <strong>ephemeral</strong> — they can be created and killed at any time to match the desired cluster state declared by deployments.</p>
+    <p>Each pod gets its own IP address — useful, but <strong>these IPs change constantly</strong> as pods come and go. A front-end service can't hardcode the IP of a back-end pod that might be replaced at any moment.</p>
+    <div class="info-box">
+      <span class="icon">💡</span>
+      <p>This is the core problem Services solve: <strong>stable discovery</strong> for ephemeral, ever-changing pods.</p>
+    </div>
+  </section>
+
+  <!-- 2: Services overview -->
+  <section>
+    <div class="section-label">02 — Solution</div>
+    <h2>Services: stable abstraction over pods</h2>
+    <p>A <strong>Service</strong> gets its own stable IP and DNS name. It uses <strong>label selectors</strong> to find the right pods in a large pool, and routes traffic to them automatically — even as pods are replaced.</p>
+
+    <div class="cluster-diagram" style="padding:0;overflow:hidden;">
+      <svg width="100%" viewBox="0 0 760 310" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+        <defs>
+          <marker id="arr1" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M2 2L8 5L2 8" fill="none" stroke="#7b83a0" stroke-width="1.5" stroke-linecap="round"/>
+          </marker>
+        </defs>
+
+        <!-- Frontend pod box -->
+        <rect x="280" y="20" width="200" height="56" rx="10"
+              fill="rgba(247,183,49,0.07)" stroke="rgba(247,183,49,0.4)" stroke-width="1" stroke-dasharray="5 3"/>
+        <text x="380" y="44" text-anchor="middle" font-family="'Space Mono',monospace" font-size="12" fill="#f7b731">Frontend pod</text>
+        <text x="380" y="62" text-anchor="middle" font-family="'Space Mono',monospace" font-size="11" fill="#7b83a0">10.0.0.12</text>
+
+        <!-- Arrow down -->
+        <line x1="380" y1="78" x2="380" y2="112" stroke="#7b83a0" stroke-width="1.5" marker-end="url(#arr1)"/>
+
+        <!-- Backend service box -->
+        <rect x="260" y="114" width="240" height="58" rx="10"
+              fill="rgba(62,207,142,0.07)" stroke="rgba(62,207,142,0.4)" stroke-width="1.5"/>
+        <text x="380" y="139" text-anchor="middle" font-family="'Space Mono',monospace" font-size="13" font-weight="700" fill="#3ecf8e">backend-service</text>
+        <text x="380" y="158" text-anchor="middle" font-family="'Space Mono',monospace" font-size="11" fill="#7b83a0">10.96.0.55 (stable)</text>
+
+        <!-- Arrow down + label -->
+        <line x1="380" y1="174" x2="380" y2="202" stroke="#7b83a0" stroke-width="1.5" marker-end="url(#arr1)"/>
+        <text x="395" y="193" font-family="'DM Sans',sans-serif" font-size="11" fill="#7b83a0">routes to</text>
+
+        <!-- Pod A -->
+        <rect x="40" y="206" width="190" height="54" rx="8"
+              fill="rgba(91,141,238,0.07)" stroke="rgba(91,141,238,0.3)" stroke-width="1"/>
+        <circle cx="62" cy="229" r="5" fill="#5b8dee">
+          <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <text x="75" y="226" font-family="'Space Mono',monospace" font-size="11" fill="#5b8dee">backend-pod-a</text>
+        <text x="75" y="244" font-family="'Space Mono',monospace" font-size="10" fill="#7b83a0">172.17.0.4</text>
+
+        <!-- Pod B -->
+        <rect x="285" y="206" width="190" height="54" rx="8"
+              fill="rgba(91,141,238,0.07)" stroke="rgba(91,141,238,0.3)" stroke-width="1"/>
+        <circle cx="307" cy="229" r="5" fill="#5b8dee">
+          <animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="0.6s" repeatCount="indefinite"/>
+        </circle>
+        <text x="320" y="226" font-family="'Space Mono',monospace" font-size="11" fill="#5b8dee">backend-pod-b</text>
+        <text x="320" y="244" font-family="'Space Mono',monospace" font-size="10" fill="#7b83a0">172.17.0.5</text>
+
+        <!-- Pod C (dying) -->
+        <rect x="530" y="206" width="190" height="54" rx="8"
+              fill="rgba(229,95,95,0.06)" stroke="rgba(229,95,95,0.3)" stroke-width="1"/>
+        <circle cx="552" cy="229" r="5" fill="#e55f5f"/>
+        <text x="565" y="226" font-family="'Space Mono',monospace" font-size="11" fill="#e55f5f">backend-pod-c</text>
+        <text x="565" y="244" font-family="'Space Mono',monospace" font-size="10" fill="rgba(229,95,95,0.6)">being replaced</text>
+
+        <!-- Connector lines from service to pods -->
+        <path d="M340 174 L135 204" fill="none" stroke="#7b83a0" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>
+        <path d="M380 174 L380 204" fill="none" stroke="#7b83a0" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>
+        <path d="M420 174 L625 204" fill="none" stroke="rgba(229,95,95,0.4)" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>
+      </svg>
+    </div>
+
+    <p style="margin-top:16px">The service IP stays the same. The frontend doesn't need to know which pod handles the request — or that pod-c just got replaced.</p>
+  </section>
+
+  <!-- 3: Labels -->
+  <section>
+    <div class="section-label">03 — Selection</div>
+    <h2>How services find pods: labels</h2>
+    <p>Pods carry <strong>labels</strong> — key/value pairs. A service uses a <strong>selector</strong> to watch for pods matching those labels, automatically updating its routing table as pods appear and disappear.</p>
+
+    <div class="code-block">
+<span class="cmt"># Pod has a label</span>
+metadata:
+  labels:
+    <span class="str">app</span>: <span class="num">backend</span>
+
+<span class="cmt"># Service selects by that label</span>
+spec:
+  selector:
+    <span class="str">app</span>: <span class="num">backend</span>
+  ports:
+    - port: <span class="num">80</span>
+      targetPort: <span class="num">8080</span>
+    </div>
+  </section>
+
+  <!-- 4: Types -->
+  <section>
+    <div class="section-label">04 — Types</div>
+    <h2>Three types of services</h2>
+
+    <div class="type-grid">
+      <div class="type-row">
+        <div>
+          <div class="type-name clusterip">ClusterIP</div>
+          <div class="scope-tag scope-internal">internal only</div>
+        </div>
+        <div class="type-desc">
+          <h4>Default type — internal communication</h4>
+          <p>Creates a virtual IP accessible only <strong>within the cluster</strong>. Used when front-end, back-end, and database pods need to talk to each other. No external traffic reaches this service directly.</p>
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div>
+          <div class="type-name nodeport">NodePort</div>
+          <div class="scope-tag scope-external">external access</div>
+        </div>
+        <div class="type-desc">
+          <h4>Expose on a predefined port across all nodes</h4>
+          <p>Opens a specific port on <strong>every node</strong> in the cluster. External traffic hitting <code style="font-family:var(--mono);font-size:12px;color:var(--accent)">NodeIP:NodePort</code> gets forwarded to the service. Good for development and non-cloud environments.</p>
+        </div>
+      </div>
+
+      <div class="type-row">
+        <div>
+          <div class="type-name lb">LoadBalancer</div>
+          <div class="scope-tag scope-cloud">cloud providers</div>
+        </div>
+        <div class="type-desc">
+          <h4>Provision a cloud load balancer automatically</h4>
+          <p>Only supported by <strong>cloud providers</strong> (AWS, GCP, Azure). Extends NodePort by automatically invoking the cloud's load balancer to distribute traffic to the exposed ports on all cluster nodes.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5: Service type diagram -->
+  <section>
+    <div class="section-label">05 — Visual</div>
+    <h2>Traffic flow by service type</h2>
+
+    <div class="cluster-diagram" style="padding:0;overflow:hidden;">
+      <svg width="100%" viewBox="0 0 760 380" xmlns="http://www.w3.org/2000/svg" style="display:block;">
+        <defs>
+          <marker id="arr2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M2 2L8 5L2 8" fill="none" stroke="#7b83a0" stroke-width="1.5" stroke-linecap="round"/>
+          </marker>
+          <marker id="arr2y" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M2 2L8 5L2 8" fill="none" stroke="#f7b731" stroke-width="1.5" stroke-linecap="round"/>
+          </marker>
+          <marker id="arr2b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+            <path d="M2 2L8 5L2 8" fill="none" stroke="#5b8dee" stroke-width="1.5" stroke-linecap="round"/>
+          </marker>
+        </defs>
+
+        <!-- Cloud LB -->
+        <rect x="255" y="16" width="250" height="48" rx="10"
+              fill="rgba(247,183,49,0.07)" stroke="rgba(247,183,49,0.4)" stroke-width="1" stroke-dasharray="5 3"/>
+        <text x="380" y="36" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="11" fill="#7b83a0">LOADBALANCER</text>
+        <text x="380" y="54" text-anchor="middle" font-family="'Space Mono',monospace" font-size="12" fill="#f7b731">☁ Cloud Load Balancer</text>
+
+        <!-- Arrow LB → nodes -->
+        <line x1="230" y1="66" x2="135" y2="104" stroke="#f7b731" stroke-width="1" opacity="0.5" marker-end="url(#arr2y)"/>
+        <line x1="380" y1="66" x2="380" y2="104" stroke="#f7b731" stroke-width="1" opacity="0.5" marker-end="url(#arr2y)"/>
+        <line x1="530" y1="66" x2="625" y2="104" stroke="#f7b731" stroke-width="1" opacity="0.5" marker-end="url(#arr2y)"/>
+
+        <!-- Node 1 -->
+        <rect x="40" y="106" width="160" height="52" rx="8"
+              fill="rgba(62,207,142,0.07)" stroke="rgba(62,207,142,0.25)" stroke-width="1"/>
+        <text x="120" y="128" text-anchor="middle" font-family="'Space Mono',monospace" font-size="12" fill="#3ecf8e">Node 1</text>
+        <text x="120" y="147" text-anchor="middle" font-family="'Space Mono',monospace" font-size="10" fill="#7b83a0">port :30080</text>
+
+        <!-- Node 2 -->
+        <rect x="300" y="106" width="160" height="52" rx="8"
+              fill="rgba(62,207,142,0.07)" stroke="rgba(62,207,142,0.25)" stroke-width="1"/>
+        <text x="380" y="128" text-anchor="middle" font-family="'Space Mono',monospace" font-size="12" fill="#3ecf8e">Node 2</text>
+        <text x="380" y="147" text-anchor="middle" font-family="'Space Mono',monospace" font-size="10" fill="#7b83a0">port :30080</text>
+
+        <!-- Node 3 -->
+        <rect x="560" y="106" width="160" height="52" rx="8"
+              fill="rgba(62,207,142,0.07)" stroke="rgba(62,207,142,0.25)" stroke-width="1"/>
+        <text x="640" y="128" text-anchor="middle" font-family="'Space Mono',monospace" font-size="12" fill="#3ecf8e">Node 3</text>
+        <text x="640" y="147" text-anchor="middle" font-family="'Space Mono',monospace" font-size="10" fill="#7b83a0">port :30080</text>
+
+        <!-- NodePort label -->
+        <text x="380" y="180" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="11" fill="#7b83a0">NodePort — forwards to ClusterIP</text>
+
+        <!-- Arrows nodes → ClusterIP service -->
+        <line x1="120" y1="160" x2="310" y2="212" stroke="#5b8dee" stroke-width="1" opacity="0.5" marker-end="url(#arr2b)"/>
+        <line x1="380" y1="160" x2="380" y2="212" stroke="#5b8dee" stroke-width="1" opacity="0.5" marker-end="url(#arr2b)"/>
+        <line x1="640" y1="160" x2="450" y2="212" stroke="#5b8dee" stroke-width="1" opacity="0.5" marker-end="url(#arr2b)"/>
+
+        <!-- ClusterIP Service -->
+        <rect x="250" y="214" width="260" height="56" rx="10"
+              fill="rgba(91,141,238,0.08)" stroke="rgba(91,141,238,0.4)" stroke-width="1.5"/>
+        <text x="380" y="234" text-anchor="middle" font-family="'DM Sans',sans-serif" font-size="11" fill="#7b83a0">CLUSTERIP</text>
+        <text x="380" y="254" text-anchor="middle" font-family="'Space Mono',monospace" font-size="12" fill="#5b8dee">my-service  10.96.1.10</text>
+
+        <!-- Arrow down to pods -->
+        <line x1="380" y1="272" x2="380" y2="298" stroke="#7b83a0" stroke-width="1.5" marker-end="url(#arr2)"/>
+
+        <!-- Pod 1 -->
+        <rect x="80" y="300" width="160" height="48" rx="8"
+              fill="rgba(91,141,238,0.06)" stroke="rgba(91,141,238,0.25)" stroke-width="1"/>
+        <circle cx="102" cy="324" r="5" fill="#5b8dee">
+          <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <text x="116" y="320" font-family="'Space Mono',monospace" font-size="11" fill="#5b8dee">pod-1</text>
+        <text x="116" y="338" font-family="'Space Mono',monospace" font-size="10" fill="#7b83a0">app: backend</text>
+
+        <!-- Pod 2 -->
+        <rect x="300" y="300" width="160" height="48" rx="8"
+              fill="rgba(91,141,238,0.06)" stroke="rgba(91,141,238,0.25)" stroke-width="1"/>
+        <circle cx="322" cy="324" r="5" fill="#5b8dee">
+          <animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="0.5s" repeatCount="indefinite"/>
+        </circle>
+        <text x="336" y="320" font-family="'Space Mono',monospace" font-size="11" fill="#5b8dee">pod-2</text>
+        <text x="336" y="338" font-family="'Space Mono',monospace" font-size="10" fill="#7b83a0">app: backend</text>
+
+        <!-- Pod 3 -->
+        <rect x="520" y="300" width="160" height="48" rx="8"
+              fill="rgba(91,141,238,0.06)" stroke="rgba(91,141,238,0.25)" stroke-width="1"/>
+        <circle cx="542" cy="324" r="5" fill="#5b8dee">
+          <animate attributeName="opacity" values="1;0.3;1" dur="2s" begin="1s" repeatCount="indefinite"/>
+        </circle>
+        <text x="556" y="320" font-family="'Space Mono',monospace" font-size="11" fill="#5b8dee">pod-3</text>
+        <text x="556" y="338" font-family="'Space Mono',monospace" font-size="10" fill="#7b83a0">app: backend</text>
+
+        <!-- Connector lines service → pods -->
+        <path d="M320 272 L160 298" fill="none" stroke="#7b83a0" stroke-width="1" stroke-dasharray="4 3" opacity="0.4"/>
+        <path d="M380 272 L380 298" fill="none" stroke="#7b83a0" stroke-width="1" stroke-dasharray="4 3" opacity="0.4"/>
+        <path d="M440 272 L600 298" fill="none" stroke="#7b83a0" stroke-width="1" stroke-dasharray="4 3" opacity="0.4"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- Summary cards -->
+  <section>
+    <div class="section-label">06 — Summary</div>
+    <h2>Quick reference</h2>
+    <div class="cards">
+      <div class="card blue">
+        <div class="card-icon">🔵</div>
+        <div class="badge blue">ClusterIP</div>
+        <h3>Internal only</h3>
+        <p>Default type. Use for pod-to-pod communication inside the cluster. Not reachable from outside.</p>
+      </div>
+      <div class="card green">
+        <div class="card-icon">🟢</div>
+        <div class="badge green">NodePort</div>
+        <h3>Fixed port on nodes</h3>
+        <p>Opens a port on all nodes. Accessible externally via any node's IP. No cloud required.</p>
+      </div>
+      <div class="card yellow">
+        <div class="card-icon">🟡</div>
+        <div class="badge yellow">LoadBalancer</div>
+        <h3>Cloud load balancer</h3>
+        <p>Cloud-provider managed. Automatically provisions and configures an external load balancer.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>Kubernetes Services — Visual Reference</p>
+    <p style="color:rgba(123,131,160,0.5)">Pods • Services • ClusterIP • NodePort • LoadBalancer</p>
+  </footer>
+
+</div>
+</body>
+</html>

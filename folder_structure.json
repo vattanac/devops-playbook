@@ -1,0 +1,24 @@
+[
+  {
+    "name": "KCNA",
+    "type": "folder",
+    "path": "KCNA",
+    "children": [
+      {
+        "name": "kubernetes-services.docx",
+        "type": "file",
+        "path": "KCNA/kubernetes-services.docx"
+      },
+      {
+        "name": "kubernetes-services.html",
+        "type": "file",
+        "path": "KCNA/kubernetes-services.html"
+      }
+    ]
+  },
+  {
+    "name": "README.md",
+    "type": "file",
+    "path": "README.md"
+  }
+]
