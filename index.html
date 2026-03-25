@@ -332,6 +332,21 @@
       return 'file-' + ext;
     }
 
+    // ── Format Display Name ──
+    // Removes .html extension, replaces "-" with spaces, capitalizes each word
+    function formatDisplayName(name, type) {
+      let display = name;
+      // Remove .html/.htm extension for files
+      if (type === 'file') {
+        display = display.replace(/\.(html|htm)$/i, '');
+      }
+      // Replace hyphens with spaces
+      display = display.replace(/-/g, ' ').trim();
+      // Capitalize each word
+      display = display.replace(/\b\w/g, c => c.toUpperCase());
+      return display;
+    }
+
     // ── Build Tree DOM ──
     function buildTree(items, container, depth = 0) {
       items.forEach(item => {
@@ -357,7 +372,7 @@
 
           const nameSpan = document.createElement('span');
           nameSpan.className = 'name';
-          nameSpan.textContent = item.name;
+          nameSpan.textContent = formatDisplayName(item.name, 'folder');
           label.appendChild(nameSpan);
 
           const childrenDiv = document.createElement('div');
@@ -389,7 +404,7 @@
 
           const nameSpan = document.createElement('span');
           nameSpan.className = 'name';
-          nameSpan.textContent = item.name;
+          nameSpan.textContent = formatDisplayName(item.name, 'file');
           label.appendChild(nameSpan);
 
           label.addEventListener('click', () => {
