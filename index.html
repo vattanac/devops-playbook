@@ -427,13 +427,38 @@
       // Viewable in iframe
       const viewableExtensions = ['html', 'htm', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'svg', 'txt', 'json', 'js', 'css', 'xml', 'md'];
 
+      // Office files viewable via Microsoft Office Online viewer
+      const officeExtensions = ['docx', 'doc', 'xlsx', 'xls', 'pptx', 'ppt'];
+
       if (viewableExtensions.includes(ext)) {
         content.innerHTML = `
           <div class="content-header">${breadcrumbHTML}</div>
           <iframe class="content-iframe" src="${encodeURI(path)}"></iframe>
         `;
+      } else if (officeExtensions.includes(ext)) {
+        // Use Microsoft Office Online viewer to preview Office files
+        const fileURL = encodeURIComponent(window.location.origin + '/' + path);
+        const viewerURL = 'https://view.officeapps.live.com/op/embed.aspx?src=' + fileURL;
+        content.innerHTML = `
+          <div class="content-header">
+            ${breadcrumbHTML}
+            <a href="${encodeURI(path)}" download style="
+              margin-left: auto;
+              padding: 4px 12px;
+              background: #007acc;
+              color: #fff;
+              text-decoration: none;
+              border-radius: 4px;
+              font-size: 12px;
+              transition: background 0.15s;
+            " onmouseover="this.style.background='#005fa3'" onmouseout="this.style.background='#007acc'">
+              ⬇ Download
+            </a>
+          </div>
+          <iframe class="content-iframe" src="${viewerURL}"></iframe>
+        `;
       } else {
-        // For non-viewable files (like .docx), show a download prompt
+        // For other non-viewable files, show a download prompt
         content.innerHTML = `
           <div class="content-header">${breadcrumbHTML}</div>
           <div class="welcome">
