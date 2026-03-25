@@ -4,145 +4,202 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DevOps Playbook</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     /* ── Reset ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     /* ── Theme Variables ── */
     :root[data-theme="dark"] {
-      --bg-primary: #1e1e1e;
-      --bg-sidebar: #252526;
-      --bg-input: #3c3c3c;
-      --bg-hover: #2a2d2e;
-      --bg-active: #094771;
-      --border: #3c3c3c;
-      --text-primary: #cccccc;
-      --text-secondary: #bbbbbb;
-      --text-muted: #888888;
-      --text-dimmed: #777777;
-      --text-faint: #555555;
-      --text-heading: #666666;
-      --scrollbar: #555555;
-      --scrollbar-hover: #666666;
-      --accent: #007acc;
-      --accent-hover: #005fa3;
+      --bg-gradient-1: #0f0c29;
+      --bg-gradient-2: #302b63;
+      --bg-gradient-3: #24243e;
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+      --glass-shadow: rgba(0, 0, 0, 0.3);
+      --glass-hover: rgba(255, 255, 255, 0.08);
+      --glass-active: rgba(99, 179, 237, 0.2);
+      --glass-input: rgba(255, 255, 255, 0.07);
+      --text-primary: #f0f0f0;
+      --text-secondary: #c0c4cc;
+      --text-muted: #8b8fa3;
+      --text-dimmed: #6b6f82;
+      --text-faint: #4a4e5e;
+      --scrollbar: rgba(255, 255, 255, 0.15);
+      --scrollbar-hover: rgba(255, 255, 255, 0.25);
+      --accent: #7c3aed;
+      --accent-glow: rgba(124, 58, 237, 0.4);
+      --accent-hover: #6d28d9;
+      --accent-light: rgba(124, 58, 237, 0.15);
       --iframe-bg: #ffffff;
+      --divider: rgba(255, 255, 255, 0.06);
+      --badge-bg: rgba(124, 58, 237, 0.2);
+      --badge-text: #a78bfa;
     }
 
     :root[data-theme="light"] {
-      --bg-primary: #f5f5f5;
-      --bg-sidebar: #ffffff;
-      --bg-input: #e8e8e8;
-      --bg-hover: #e9e9e9;
-      --bg-active: #d0e8ff;
-      --border: #d4d4d4;
-      --text-primary: #333333;
-      --text-secondary: #444444;
-      --text-muted: #666666;
-      --text-dimmed: #888888;
-      --text-faint: #999999;
-      --text-heading: #555555;
-      --scrollbar: #c0c0c0;
-      --scrollbar-hover: #a0a0a0;
-      --accent: #0078d4;
-      --accent-hover: #005a9e;
+      --bg-gradient-1: #e0e7ff;
+      --bg-gradient-2: #c7d2fe;
+      --bg-gradient-3: #ddd6fe;
+      --glass-bg: rgba(255, 255, 255, 0.6);
+      --glass-border: rgba(255, 255, 255, 0.7);
+      --glass-shadow: rgba(99, 102, 241, 0.1);
+      --glass-hover: rgba(99, 102, 241, 0.08);
+      --glass-active: rgba(99, 102, 241, 0.15);
+      --glass-input: rgba(255, 255, 255, 0.7);
+      --text-primary: #1e1b4b;
+      --text-secondary: #3730a3;
+      --text-muted: #6366f1;
+      --text-dimmed: #818cf8;
+      --text-faint: #a5b4fc;
+      --scrollbar: rgba(99, 102, 241, 0.2);
+      --scrollbar-hover: rgba(99, 102, 241, 0.35);
+      --accent: #6366f1;
+      --accent-glow: rgba(99, 102, 241, 0.3);
+      --accent-hover: #4f46e5;
+      --accent-light: rgba(99, 102, 241, 0.1);
       --iframe-bg: #ffffff;
+      --divider: rgba(99, 102, 241, 0.1);
+      --badge-bg: rgba(99, 102, 241, 0.12);
+      --badge-text: #6366f1;
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       display: flex;
       height: 100vh;
       overflow: hidden;
-      background: var(--bg-primary);
+      background: linear-gradient(135deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3));
       color: var(--text-primary);
-      transition: background 0.3s, color 0.3s;
+      transition: all 0.5s ease;
     }
 
-    /* ── Sidebar ── */
+    /* Animated gradient background */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 20% 50%, var(--accent-glow) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 50% 80%, rgba(6, 182, 212, 0.12) 0%, transparent 50%);
+      animation: gradientShift 20s ease-in-out infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(2%, -2%) rotate(1deg); }
+      66% { transform: translate(-1%, 1%) rotate(-1deg); }
+    }
+
+    /* ── Glassmorphism Sidebar ── */
     .sidebar {
-      width: 280px;
-      min-width: 280px;
-      background: var(--bg-sidebar);
-      border-right: 1px solid var(--border);
+      width: 300px;
+      min-width: 300px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border-right: 1px solid var(--glass-border);
+      box-shadow: 4px 0 24px var(--glass-shadow);
       display: flex;
       flex-direction: column;
       height: 100vh;
       overflow: hidden;
-      transition: background 0.3s, border-color 0.3s;
+      z-index: 10;
+      position: relative;
+      transition: background 0.5s, border-color 0.5s, box-shadow 0.5s;
     }
 
     .sidebar-header {
-      padding: 16px 16px 12px;
-      border-bottom: 1px solid var(--border);
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid var(--divider);
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       flex-shrink: 0;
-      transition: border-color 0.3s;
     }
 
     .sidebar-header h1 {
-      font-size: 13px;
+      font-size: 14px;
       font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-secondary);
+      letter-spacing: 0.5px;
+      color: var(--text-primary);
       flex: 1;
-      transition: color 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
 
-    .sidebar-header .header-btn {
-      background: none;
-      border: none;
+    .sidebar-header h1 .title-icon {
+      font-size: 18px;
+    }
+
+    .header-btn {
+      background: var(--glass-input);
+      border: 1px solid var(--glass-border);
       color: var(--text-muted);
       cursor: pointer;
-      padding: 4px;
-      border-radius: 4px;
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
       font-size: 14px;
-      line-height: 1;
-      transition: color 0.15s, background 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      backdrop-filter: blur(8px);
     }
 
-    .sidebar-header .header-btn:hover {
+    .header-btn:hover {
       color: var(--text-primary);
-      background: var(--bg-input);
+      background: var(--glass-hover);
+      border-color: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+      transform: translateY(-1px);
     }
 
-    /* ── Theme Toggle ── */
     .theme-toggle {
-      font-size: 16px !important;
+      font-size: 15px !important;
     }
 
     .search-box {
-      padding: 8px 12px;
+      padding: 10px 16px;
       flex-shrink: 0;
     }
 
     .search-box input {
       width: 100%;
-      padding: 6px 10px;
-      background: var(--bg-input);
-      border: 1px solid var(--border);
-      border-radius: 4px;
+      padding: 10px 14px;
+      background: var(--glass-input);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
       color: var(--text-primary);
+      font-family: inherit;
       font-size: 13px;
       outline: none;
-      transition: border-color 0.15s, background 0.3s, color 0.3s;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(8px);
     }
 
     .search-box input::placeholder { color: var(--text-dimmed); }
-    .search-box input:focus { border-color: var(--accent); }
+    .search-box input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 16px var(--accent-glow), inset 0 0 8px var(--accent-light);
+    }
 
     .tree-container {
       flex: 1;
       overflow-y: auto;
-      padding: 8px 0;
+      padding: 6px 8px;
     }
 
-    .tree-container::-webkit-scrollbar { width: 6px; }
+    .tree-container::-webkit-scrollbar { width: 5px; }
     .tree-container::-webkit-scrollbar-track { background: transparent; }
-    .tree-container::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 3px; }
+    .tree-container::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 10px; }
     .tree-container::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-hover); }
 
     /* ── Tree Items ── */
@@ -153,46 +210,52 @@
     .tree-label {
       display: flex;
       align-items: center;
-      padding: 4px 8px;
-      padding-left: calc(16px + var(--depth, 0) * 18px);
+      padding: 7px 10px;
+      padding-left: calc(14px + var(--depth, 0) * 18px);
       cursor: pointer;
-      transition: background 0.1s;
       font-size: 13px;
+      font-weight: 400;
       line-height: 22px;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      border-radius: 0;
+      border-radius: 10px;
+      margin: 1px 0;
+      transition: all 0.2s ease;
     }
 
     .tree-label:hover {
-      background: var(--bg-hover);
+      background: var(--glass-hover);
+      transform: translateX(2px);
     }
 
     .tree-label.active {
-      background: var(--bg-active);
+      background: var(--glass-active);
+      border: 1px solid var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow), inset 0 0 8px var(--accent-light);
       color: var(--text-primary);
+      font-weight: 500;
     }
 
-    [data-theme="dark"] .tree-label.active {
-      color: #ffffff;
+    .tree-label:not(.active) {
+      border: 1px solid transparent;
     }
 
     .tree-label .icon {
       flex-shrink: 0;
-      width: 18px;
+      width: 20px;
       text-align: center;
-      margin-right: 6px;
-      font-size: 14px;
+      margin-right: 8px;
+      font-size: 15px;
     }
 
     .tree-label .chevron {
       flex-shrink: 0;
       width: 16px;
       text-align: center;
-      font-size: 10px;
-      transition: transform 0.15s;
-      color: var(--text-muted);
+      font-size: 9px;
+      transition: transform 0.2s ease;
+      color: var(--text-dimmed);
     }
 
     .tree-label .chevron.open {
@@ -207,7 +270,7 @@
     .tree-children {
       overflow: hidden;
       max-height: 0;
-      transition: max-height 0.25s ease;
+      transition: max-height 0.3s ease;
     }
 
     .tree-children.open {
@@ -223,18 +286,20 @@
       background: transparent;
       flex-shrink: 0;
       position: relative;
+      z-index: 11;
     }
     .resize-handle::before {
       content: '';
       position: absolute;
       top: 0;
       bottom: 0;
-      left: -4px;
-      right: -4px;
+      left: -5px;
+      right: -5px;
     }
     .resize-handle:hover,
     .resize-handle.active {
-      background: var(--accent);
+      background: linear-gradient(180deg, var(--accent), rgba(236, 72, 153, 0.6));
+      box-shadow: 0 0 12px var(--accent-glow);
     }
 
     /* ── Content Area ── */
@@ -242,42 +307,51 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      background: var(--bg-primary);
       overflow: hidden;
-      transition: background 0.3s;
+      position: relative;
+      z-index: 1;
     }
 
     .content-header {
-      padding: 8px 16px;
-      background: var(--bg-sidebar);
-      border-bottom: 1px solid var(--border);
+      padding: 10px 20px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
       font-size: 13px;
       color: var(--text-muted);
       display: flex;
       align-items: center;
       gap: 6px;
       flex-shrink: 0;
-      transition: background 0.3s, border-color 0.3s, color 0.3s;
+      transition: all 0.5s;
     }
 
     .content-header .breadcrumb {
       display: flex;
       align-items: center;
-      gap: 4px;
+      gap: 6px;
     }
 
     .content-header .breadcrumb span {
-      color: var(--text-muted);
+      color: var(--text-dimmed);
+      font-size: 12px;
     }
 
     .content-header .breadcrumb .current {
       color: var(--text-primary);
+      font-weight: 500;
+      background: var(--badge-bg);
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-size: 12px;
     }
 
     .content-iframe {
       flex: 1;
       border: none;
       background: var(--iframe-bg);
+      border-radius: 0;
     }
 
     .welcome {
@@ -287,64 +361,119 @@
       align-items: center;
       justify-content: center;
       color: var(--text-faint);
-      gap: 16px;
+      gap: 20px;
+      position: relative;
     }
 
     .welcome .logo {
-      font-size: 64px;
-      opacity: 0.3;
+      font-size: 72px;
+      filter: drop-shadow(0 0 20px var(--accent-glow));
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
     }
 
     .welcome h2 {
-      font-size: 20px;
-      font-weight: 400;
-      color: var(--text-heading);
+      font-size: 24px;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--text-primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
     .welcome p {
-      font-size: 13px;
-      color: var(--text-faint);
-      max-width: 400px;
+      font-size: 14px;
+      color: var(--text-muted);
+      max-width: 420px;
       text-align: center;
-      line-height: 1.6;
+      line-height: 1.7;
+    }
+
+    /* ── Buttons ── */
+    .glass-btn {
+      padding: 10px 24px;
+      background: var(--accent);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 500;
+      font-family: inherit;
+      border: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      box-shadow: 0 4px 16px var(--accent-glow);
+    }
+
+    .glass-btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px var(--accent-glow);
+    }
+
+    .glass-btn-sm {
+      padding: 5px 14px;
+      background: var(--glass-input);
+      backdrop-filter: blur(8px);
+      color: var(--text-primary);
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      font-family: inherit;
+      border: 1px solid var(--glass-border);
+      cursor: pointer;
+      margin-left: auto;
+      transition: all 0.2s ease;
+    }
+
+    .glass-btn-sm:hover {
+      border-color: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
     }
 
     /* ── File type colors ── */
-    .file-html .icon { color: #e44d26; }
-    .file-docx .icon, .file-doc .icon { color: #2b579a; }
-    .file-pdf .icon  { color: #e44d26; }
-    .file-js .icon   { color: #f7df1e; }
-    .file-py .icon   { color: #3572a5; }
-    .file-json .icon { color: #5b9bd5; }
-    .file-md .icon   { color: #519aba; }
-    .file-yaml .icon, .file-yml .icon { color: #cb171e; }
-    .file-sh .icon   { color: #89e051; }
+    .file-html .icon { color: #f97316; }
+    .file-docx .icon, .file-doc .icon { color: #3b82f6; }
+    .file-pdf .icon  { color: #ef4444; }
+    .file-js .icon   { color: #eab308; }
+    .file-py .icon   { color: #22d3ee; }
+    .file-json .icon { color: #8b5cf6; }
+    .file-md .icon   { color: #06b6d4; }
+    .file-yaml .icon, .file-yml .icon { color: #f43f5e; }
+    .file-sh .icon   { color: #22c55e; }
     .file-txt .icon  { color: var(--text-muted); }
-    .folder .icon    { color: #dcb67a; }
+    .folder .icon    { color: #fbbf24; }
 
     /* ── Sidebar Footer ── */
     .sidebar-footer {
-      padding: 12px 16px;
-      border-top: 1px solid var(--border);
+      padding: 14px 20px;
+      border-top: 1px solid var(--divider);
       font-size: 11px;
-      color: var(--text-muted);
+      color: var(--text-dimmed);
       flex-shrink: 0;
-      line-height: 1.6;
-      transition: border-color 0.3s, color 0.3s;
+      line-height: 1.7;
+      transition: all 0.5s;
     }
 
     .sidebar-footer a {
-      color: var(--accent);
+      color: var(--badge-text);
       text-decoration: none;
+      transition: all 0.2s;
     }
 
     .sidebar-footer a:hover {
-      text-decoration: underline;
+      color: var(--accent);
+      text-shadow: 0 0 8px var(--accent-glow);
     }
 
     /* ── Responsive ── */
     @media (max-width: 768px) {
-      .sidebar { width: 240px; min-width: 200px; }
+      .sidebar { width: 260px; min-width: 220px; }
     }
   </style>
 </head>
@@ -353,7 +482,7 @@
   <!-- Sidebar -->
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-header">
-      <h1>📂 Explorer</h1>
+      <h1><span class="title-icon">📂</span> Explorer</h1>
       <button class="header-btn theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle dark/light mode">🌙</button>
       <button class="header-btn" onclick="loadTree()" title="Refresh tree">⟳</button>
     </div>
@@ -443,16 +572,12 @@
     }
 
     // ── Format Display Name ──
-    // Removes .html extension, replaces "-" with spaces, capitalizes each word
     function formatDisplayName(name, type) {
       let display = name;
-      // Remove .html/.htm extension for files
       if (type === 'file') {
         display = display.replace(/\.(html|htm)$/i, '');
       }
-      // Replace hyphens with spaces
       display = display.replace(/-/g, ' ').trim();
-      // Capitalize each word
       display = display.replace(/\b\w/g, c => c.toUpperCase());
       return display;
     }
@@ -501,7 +626,6 @@
             buildTree(item.children, childrenDiv, depth + 1);
           }
         } else {
-          // Spacer for alignment with folders
           const spacer = document.createElement('span');
           spacer.className = 'chevron';
           spacer.textContent = '';
@@ -536,7 +660,6 @@
       const content = document.getElementById('content');
       const ext = name.split('.').pop().toLowerCase();
 
-      // Build breadcrumb
       const parts = path.split('/');
       let breadcrumbHTML = '<div class="breadcrumb">';
       parts.forEach((part, i) => {
@@ -549,10 +672,7 @@
       });
       breadcrumbHTML += '</div>';
 
-      // Viewable in iframe
       const viewableExtensions = ['html', 'htm', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'svg', 'txt', 'json', 'js', 'css', 'xml', 'md'];
-
-      // Office files viewable via Microsoft Office Online viewer
       const officeExtensions = ['docx', 'doc', 'xlsx', 'xls', 'pptx', 'ppt'];
 
       if (viewableExtensions.includes(ext)) {
@@ -561,47 +681,23 @@
           <iframe class="content-iframe" src="${encodeURI(path)}"></iframe>
         `;
       } else if (officeExtensions.includes(ext)) {
-        // Use Microsoft Office Online viewer to preview Office files
         const fileURL = encodeURIComponent(window.location.origin + '/' + path);
         const viewerURL = 'https://view.officeapps.live.com/op/embed.aspx?src=' + fileURL;
         content.innerHTML = `
           <div class="content-header">
             ${breadcrumbHTML}
-            <a href="${encodeURI(path)}" download style="
-              margin-left: auto;
-              padding: 4px 12px;
-              background: var(--accent);
-              color: #fff;
-              text-decoration: none;
-              border-radius: 4px;
-              font-size: 12px;
-              transition: background 0.15s;
-            " onmouseover="this.style.background='var(--accent-hover)'" onmouseout="this.style.background='var(--accent)'">
-              ⬇ Download
-            </a>
+            <a href="${encodeURI(path)}" download class="glass-btn-sm">⬇ Download</a>
           </div>
           <iframe class="content-iframe" src="${viewerURL}"></iframe>
         `;
       } else {
-        // For other non-viewable files, show a download prompt
         content.innerHTML = `
           <div class="content-header">${breadcrumbHTML}</div>
           <div class="welcome">
             <div class="logo">${getFileIcon(name)}</div>
             <h2>${name}</h2>
             <p>This file type cannot be previewed in the browser.<br>Click below to download it.</p>
-            <a href="${encodeURI(path)}" download style="
-              margin-top: 12px;
-              padding: 10px 24px;
-              background: var(--accent);
-              color: #fff;
-              text-decoration: none;
-              border-radius: 6px;
-              font-size: 14px;
-              transition: background 0.15s;
-            " onmouseover="this.style.background='var(--accent-hover)'" onmouseout="this.style.background='var(--accent)'">
-              ⬇ Download File
-            </a>
+            <a href="${encodeURI(path)}" download class="glass-btn">⬇ Download File</a>
           </div>
         `;
       }
@@ -617,18 +713,15 @@
         return;
       }
 
-      // First hide all, then show matches and their parent folders
       allLabels.forEach(label => label.classList.add('hidden'));
 
       allLabels.forEach(label => {
         if (label.dataset.name && label.dataset.name.includes(q)) {
           label.classList.remove('hidden');
-          // Expand and show parent folders
           let parent = label.parentElement;
           while (parent && parent !== document.getElementById('treeContainer')) {
             if (parent.classList.contains('tree-children')) {
               parent.classList.add('open');
-              // Show the folder's label
               const folderLabel = parent.previousElementSibling;
               if (folderLabel && folderLabel.classList.contains('tree-label')) {
                 folderLabel.classList.remove('hidden');
@@ -658,9 +751,9 @@
         buildTree(data, container);
       } catch (err) {
         container.innerHTML = `
-          <div style="padding: 20px; color: #e44d26; font-size: 13px;">
+          <div style="padding: 20px; color: #f97316; font-size: 13px;">
             ⚠️ Could not load folder structure.<br><br>
-            Run <code style="background: var(--bg-input); padding:2px 6px; border-radius:3px;">python3 build_menu.py</code> to generate it.
+            Run <code style="background: var(--glass-input); padding:3px 8px; border-radius:6px;">python3 build_menu.py</code> to generate it.
           </div>
         `;
         console.error(err);
@@ -679,7 +772,6 @@
         handle.classList.add('active');
         document.body.style.cursor = 'col-resize';
         document.body.style.userSelect = 'none';
-        // Prevent iframe from stealing mouse events
         const iframes = contentEl.querySelectorAll('iframe');
         iframes.forEach(f => f.style.pointerEvents = 'none');
         e.preventDefault();
@@ -688,7 +780,7 @@
       document.addEventListener('mousemove', (e) => {
         if (!isResizing) return;
         requestAnimationFrame(() => {
-          const newWidth = Math.max(180, Math.min(e.clientX, 500));
+          const newWidth = Math.max(200, Math.min(e.clientX, 500));
           sidebar.style.width = newWidth + 'px';
           sidebar.style.minWidth = newWidth + 'px';
         });
