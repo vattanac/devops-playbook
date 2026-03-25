@@ -27,7 +27,6 @@
       flex-direction: column;
       height: 100vh;
       overflow: hidden;
-      transition: width 0.2s;
     }
 
     .sidebar-header {
@@ -164,11 +163,19 @@
 
     /* ── Resize Handle ── */
     .resize-handle {
-      width: 4px;
+      width: 6px;
       cursor: col-resize;
       background: transparent;
-      transition: background 0.15s;
       flex-shrink: 0;
+      position: relative;
+    }
+    .resize-handle::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: -4px;
+      right: -4px;
     }
     .resize-handle:hover,
     .resize-handle.active {
@@ -561,20 +568,27 @@
     (function() {
       const handle = document.getElementById('resizeHandle');
       const sidebar = document.getElementById('sidebar');
+      const contentEl = document.getElementById('content');
       let isResizing = false;
 
       handle.addEventListener('mousedown', (e) => {
         isResizing = true;
         handle.classList.add('active');
         document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+        // Prevent iframe from stealing mouse events
+        const iframes = contentEl.querySelectorAll('iframe');
+        iframes.forEach(f => f.style.pointerEvents = 'none');
         e.preventDefault();
       });
 
       document.addEventListener('mousemove', (e) => {
         if (!isResizing) return;
-        const newWidth = Math.max(180, Math.min(e.clientX, 500));
-        sidebar.style.width = newWidth + 'px';
-        sidebar.style.minWidth = newWidth + 'px';
+        requestAnimationFrame(() => {
+          const newWidth = Math.max(180, Math.min(e.clientX, 500));
+          sidebar.style.width = newWidth + 'px';
+          sidebar.style.minWidth = newWidth + 'px';
+        });
       });
 
       document.addEventListener('mouseup', () => {
@@ -582,6 +596,9 @@
           isResizing = false;
           handle.classList.remove('active');
           document.body.style.cursor = '';
+          document.body.style.userSelect = '';
+          const iframes = contentEl.querySelectorAll('iframe');
+          iframes.forEach(f => f.style.pointerEvents = '');
         }
       });
     })();
