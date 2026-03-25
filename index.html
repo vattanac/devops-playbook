@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,34 +8,78 @@
     /* ── Reset ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    /* ── Theme Variables ── */
+    :root[data-theme="dark"] {
+      --bg-primary: #1e1e1e;
+      --bg-sidebar: #252526;
+      --bg-input: #3c3c3c;
+      --bg-hover: #2a2d2e;
+      --bg-active: #094771;
+      --border: #3c3c3c;
+      --text-primary: #cccccc;
+      --text-secondary: #bbbbbb;
+      --text-muted: #888888;
+      --text-dimmed: #777777;
+      --text-faint: #555555;
+      --text-heading: #666666;
+      --scrollbar: #555555;
+      --scrollbar-hover: #666666;
+      --accent: #007acc;
+      --accent-hover: #005fa3;
+      --iframe-bg: #ffffff;
+    }
+
+    :root[data-theme="light"] {
+      --bg-primary: #f5f5f5;
+      --bg-sidebar: #ffffff;
+      --bg-input: #e8e8e8;
+      --bg-hover: #e9e9e9;
+      --bg-active: #d0e8ff;
+      --border: #d4d4d4;
+      --text-primary: #333333;
+      --text-secondary: #444444;
+      --text-muted: #666666;
+      --text-dimmed: #888888;
+      --text-faint: #999999;
+      --text-heading: #555555;
+      --scrollbar: #c0c0c0;
+      --scrollbar-hover: #a0a0a0;
+      --accent: #0078d4;
+      --accent-hover: #005a9e;
+      --iframe-bg: #ffffff;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
       display: flex;
       height: 100vh;
       overflow: hidden;
-      background: #1e1e1e;
-      color: #cccccc;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      transition: background 0.3s, color 0.3s;
     }
 
     /* ── Sidebar ── */
     .sidebar {
       width: 280px;
       min-width: 280px;
-      background: #252526;
-      border-right: 1px solid #3c3c3c;
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
       height: 100vh;
       overflow: hidden;
+      transition: background 0.3s, border-color 0.3s;
     }
 
     .sidebar-header {
       padding: 16px 16px 12px;
-      border-bottom: 1px solid #3c3c3c;
+      border-bottom: 1px solid var(--border);
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      gap: 8px;
       flex-shrink: 0;
+      transition: border-color 0.3s;
     }
 
     .sidebar-header h1 {
@@ -43,13 +87,15 @@
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 1px;
-      color: #bbbbbb;
+      color: var(--text-secondary);
+      flex: 1;
+      transition: color 0.3s;
     }
 
-    .sidebar-header .refresh-btn {
+    .sidebar-header .header-btn {
       background: none;
       border: none;
-      color: #888;
+      color: var(--text-muted);
       cursor: pointer;
       padding: 4px;
       border-radius: 4px;
@@ -58,9 +104,14 @@
       transition: color 0.15s, background 0.15s;
     }
 
-    .sidebar-header .refresh-btn:hover {
-      color: #fff;
-      background: #3c3c3c;
+    .sidebar-header .header-btn:hover {
+      color: var(--text-primary);
+      background: var(--bg-input);
+    }
+
+    /* ── Theme Toggle ── */
+    .theme-toggle {
+      font-size: 16px !important;
     }
 
     .search-box {
@@ -71,17 +122,17 @@
     .search-box input {
       width: 100%;
       padding: 6px 10px;
-      background: #3c3c3c;
-      border: 1px solid #555;
+      background: var(--bg-input);
+      border: 1px solid var(--border);
       border-radius: 4px;
-      color: #ccc;
+      color: var(--text-primary);
       font-size: 13px;
       outline: none;
-      transition: border-color 0.15s;
+      transition: border-color 0.15s, background 0.3s, color 0.3s;
     }
 
-    .search-box input::placeholder { color: #777; }
-    .search-box input:focus { border-color: #007acc; }
+    .search-box input::placeholder { color: var(--text-dimmed); }
+    .search-box input:focus { border-color: var(--accent); }
 
     .tree-container {
       flex: 1;
@@ -91,8 +142,8 @@
 
     .tree-container::-webkit-scrollbar { width: 6px; }
     .tree-container::-webkit-scrollbar-track { background: transparent; }
-    .tree-container::-webkit-scrollbar-thumb { background: #555; border-radius: 3px; }
-    .tree-container::-webkit-scrollbar-thumb:hover { background: #666; }
+    .tree-container::-webkit-scrollbar-thumb { background: var(--scrollbar); border-radius: 3px; }
+    .tree-container::-webkit-scrollbar-thumb:hover { background: var(--scrollbar-hover); }
 
     /* ── Tree Items ── */
     .tree-item {
@@ -115,11 +166,15 @@
     }
 
     .tree-label:hover {
-      background: #2a2d2e;
+      background: var(--bg-hover);
     }
 
     .tree-label.active {
-      background: #094771;
+      background: var(--bg-active);
+      color: var(--text-primary);
+    }
+
+    [data-theme="dark"] .tree-label.active {
       color: #ffffff;
     }
 
@@ -137,7 +192,7 @@
       text-align: center;
       font-size: 10px;
       transition: transform 0.15s;
-      color: #888;
+      color: var(--text-muted);
     }
 
     .tree-label .chevron.open {
@@ -179,7 +234,7 @@
     }
     .resize-handle:hover,
     .resize-handle.active {
-      background: #007acc;
+      background: var(--accent);
     }
 
     /* ── Content Area ── */
@@ -187,20 +242,22 @@
       flex: 1;
       display: flex;
       flex-direction: column;
-      background: #1e1e1e;
+      background: var(--bg-primary);
       overflow: hidden;
+      transition: background 0.3s;
     }
 
     .content-header {
       padding: 8px 16px;
-      background: #252526;
-      border-bottom: 1px solid #3c3c3c;
+      background: var(--bg-sidebar);
+      border-bottom: 1px solid var(--border);
       font-size: 13px;
-      color: #999;
+      color: var(--text-muted);
       display: flex;
       align-items: center;
       gap: 6px;
       flex-shrink: 0;
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
     }
 
     .content-header .breadcrumb {
@@ -210,17 +267,17 @@
     }
 
     .content-header .breadcrumb span {
-      color: #888;
+      color: var(--text-muted);
     }
 
     .content-header .breadcrumb .current {
-      color: #cccccc;
+      color: var(--text-primary);
     }
 
     .content-iframe {
       flex: 1;
       border: none;
-      background: #ffffff;
+      background: var(--iframe-bg);
     }
 
     .welcome {
@@ -229,7 +286,7 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      color: #555;
+      color: var(--text-faint);
       gap: 16px;
     }
 
@@ -241,12 +298,12 @@
     .welcome h2 {
       font-size: 20px;
       font-weight: 400;
-      color: #666;
+      color: var(--text-heading);
     }
 
     .welcome p {
       font-size: 13px;
-      color: #555;
+      color: var(--text-faint);
       max-width: 400px;
       text-align: center;
       line-height: 1.6;
@@ -262,7 +319,7 @@
     .file-md .icon   { color: #519aba; }
     .file-yaml .icon, .file-yml .icon { color: #cb171e; }
     .file-sh .icon   { color: #89e051; }
-    .file-txt .icon  { color: #888; }
+    .file-txt .icon  { color: var(--text-muted); }
     .folder .icon    { color: #dcb67a; }
 
     /* ── Responsive ── */
@@ -277,7 +334,8 @@
   <nav class="sidebar" id="sidebar">
     <div class="sidebar-header">
       <h1>📂 Explorer</h1>
-      <button class="refresh-btn" onclick="loadTree()" title="Refresh tree">⟳</button>
+      <button class="header-btn theme-toggle" onclick="toggleTheme()" id="themeBtn" title="Toggle dark/light mode">🌙</button>
+      <button class="header-btn" onclick="loadTree()" title="Refresh tree">⟳</button>
     </div>
     <div class="search-box">
       <input type="text" id="searchInput" placeholder="Search files..." oninput="filterTree(this.value)">
@@ -300,6 +358,27 @@
   <script>
     // ── State ──
     let activeLabel = null;
+
+    // ── Theme Toggle ──
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      document.getElementById('themeBtn').textContent = next === 'dark' ? '🌙' : '☀️';
+      try { localStorage.setItem('theme', next); } catch(e) {}
+    }
+
+    // Load saved theme
+    (function() {
+      try {
+        const saved = localStorage.getItem('theme');
+        if (saved) {
+          document.documentElement.setAttribute('data-theme', saved);
+          document.getElementById('themeBtn').textContent = saved === 'dark' ? '🌙' : '☀️';
+        }
+      } catch(e) {}
+    })();
 
     // ── File Icons ──
     const FILE_ICONS = {
@@ -467,13 +546,13 @@
             <a href="${encodeURI(path)}" download style="
               margin-left: auto;
               padding: 4px 12px;
-              background: #007acc;
+              background: var(--accent);
               color: #fff;
               text-decoration: none;
               border-radius: 4px;
               font-size: 12px;
               transition: background 0.15s;
-            " onmouseover="this.style.background='#005fa3'" onmouseout="this.style.background='#007acc'">
+            " onmouseover="this.style.background='var(--accent-hover)'" onmouseout="this.style.background='var(--accent)'">
               ⬇ Download
             </a>
           </div>
@@ -490,13 +569,13 @@
             <a href="${encodeURI(path)}" download style="
               margin-top: 12px;
               padding: 10px 24px;
-              background: #007acc;
+              background: var(--accent);
               color: #fff;
               text-decoration: none;
               border-radius: 6px;
               font-size: 14px;
               transition: background 0.15s;
-            " onmouseover="this.style.background='#005fa3'" onmouseout="this.style.background='#007acc'">
+            " onmouseover="this.style.background='var(--accent-hover)'" onmouseout="this.style.background='var(--accent)'">
               ⬇ Download File
             </a>
           </div>
@@ -557,7 +636,7 @@
         container.innerHTML = `
           <div style="padding: 20px; color: #e44d26; font-size: 13px;">
             ⚠️ Could not load folder structure.<br><br>
-            Run <code style="background:#3c3c3c; padding:2px 6px; border-radius:3px;">python3 build_menu.py</code> to generate it.
+            Run <code style="background: var(--bg-input); padding:2px 6px; border-radius:3px;">python3 build_menu.py</code> to generate it.
           </div>
         `;
         console.error(err);
