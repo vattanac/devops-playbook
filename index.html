@@ -548,6 +548,36 @@
       color: var(--text-dimmed);
     }
 
+    .copy-btn {
+      background: var(--glass-input);
+      border: 1px solid var(--glass-border);
+      color: var(--text-muted);
+      padding: 5px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-family: inherit;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.25s ease;
+      backdrop-filter: blur(8px);
+    }
+
+    .copy-btn:hover {
+      color: var(--text-primary);
+      border-color: var(--accent);
+      box-shadow: 0 0 12px var(--accent-glow);
+    }
+
+    .copy-btn.copied {
+      background: rgba(34, 197, 94, 0.15);
+      border-color: rgba(34, 197, 94, 0.4);
+      color: #22c55e;
+      box-shadow: 0 0 12px rgba(34, 197, 94, 0.2);
+    }
+
     /* ── Responsive ── */
     @media (max-width: 768px) {
       .sidebar { width: 260px; min-width: 220px; }
@@ -773,6 +803,7 @@
           </div>
           <div class="text-viewer-header">
             <span class="file-badge">${ext}</span>
+            <button class="copy-btn" id="copyBtn" onclick="copyFileContent()">📋 Copy</button>
             <span class="line-count">Loading...</span>
           </div>
           <div class="text-viewer" id="textViewer">Loading file...</div>
@@ -781,6 +812,7 @@
           .then(r => r.text())
           .then(text => {
             const viewer = document.getElementById('textViewer');
+            viewer.dataset.rawText = text;
             const lines = text.split('\n');
             const lineCountEl = content.querySelector('.line-count');
             if (lineCountEl) lineCountEl.textContent = lines.length + ' lines';
@@ -908,6 +940,38 @@
         }
       });
     })();
+
+    // ── Copy File Content ──
+    function copyFileContent() {
+      const viewer = document.getElementById('textViewer');
+      const btn = document.getElementById('copyBtn');
+      const text = viewer.dataset.rawText || viewer.textContent;
+
+      navigator.clipboard.writeText(text).then(() => {
+        btn.classList.add('copied');
+        btn.innerHTML = '✓ Copied!';
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = '📋 Copy';
+        }, 2000);
+      }).catch(() => {
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+        btn.classList.add('copied');
+        btn.innerHTML = '✓ Copied!';
+        setTimeout(() => {
+          btn.classList.remove('copied');
+          btn.innerHTML = '📋 Copy';
+        }, 2000);
+      });
+    }
 
     // ── Init ──
     loadTree();
